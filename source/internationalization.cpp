@@ -17,7 +17,7 @@
 #include <unordered_map>
 #include <fstream>
 
-#if defined(STD_THREAD_NOT_SUPPORTED)
+#if defined(STD_THREAD_NOT_SUPPORTED) && !defined(_GLIBCXX_HAS_GTHREADS)
 #include <nana/std_mutex.hpp>
 #else
 #include <mutex>
@@ -171,7 +171,7 @@ namespace nana
 				table["NANA_BUTTON_CANCEL"] = "Cancel";
 				table["NANA_BUTTON_CANCEL_SHORTKEY"] = "&Cancel";
 				table["NANA_BUTTON_CREATE"] = "Create";
-		
+
 				table["NANA_FILEBOX_BYTES"] = "Bytes";
 				table["NANA_FILEBOX_FILESYSTEM"] = "FILESYSTEM";
 				table["NANA_FILEBOX_FILTER"] = "Filter";
@@ -416,7 +416,7 @@ namespace nana
 
 	void internationalization::_m_fetch_args(std::vector<std::string>&) const
 	{}
-	
+
 	void internationalization::_m_fetch_args(std::vector<std::string>& v, const char* arg) const
 	{
 		v.emplace_back(arg);
@@ -456,7 +456,7 @@ namespace nana
 	{
 		v.emplace_back(to_utf8(arg));
 	}
-	
+
 	//end class internationalization
 
 
@@ -552,7 +552,7 @@ namespace nana
 
 		internationalization i18n;
 
-		std::string msgstr = i18n._m_get(std::string{msgid_});		
+		std::string msgstr = i18n._m_get(std::string{msgid_});
 		i18n._m_replace_args(msgstr, &arg_strs);
 		return msgstr;
 	}
