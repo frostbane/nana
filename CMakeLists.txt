@@ -149,6 +149,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")    # 
     if  ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14 -Wall -g")       # Clang
 
+    elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14 -Wall -g")       #  MingW
+
     else ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
           set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14  -Wall -g")       # GNU
 
@@ -296,15 +299,41 @@ foreach(subdir ${NANA_SOURCE_SUBDIRS})
         # message("Subir:  ${subdir}") # message("Files:  ${sources}")
 endforeach(subdir ${NANA_SOURCE_SUBDIRS})
 
+if (MSVC)
+    # todo!!
+    # also include the headers in the visual studio project
+    file(GLOB HEADER_FILES "include/nana/any.hpp"
+                           "include/nana/basic_types.hpp"
+                           "include/nana/c++defines.hpp"
+                           "include/nana/charset.hpp"
+                           "include/nana/concepts.hpp")
+else ()
+    set (HEADER_FILES "")
+endif ()
+
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
     add_definitions(-fmax-errors=3)
 endif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 
 if(NANA_CMAKE_SHARED_LIB)
-    add_library(${PROJECT_NAME} SHARED ${sources} )
+    add_library(${PROJECT_NAME} SHARED ${sources}
+                                       ${HEADER_FILES})
 else()
-    add_library(${PROJECT_NAME} STATIC ${sources} )
+    add_library(${PROJECT_NAME} STATIC ${sources}
+                                       ${HEADER_FILES})
 endif(NANA_CMAKE_SHARED_LIB)
+
+if (MSVC)
+    # todo: set the minimum version to the MSVC_VERSION of visual studio 2013
+    # message (STATUS "Loser Studio Version ${MSVC_VERSION}")
+    if(NOT MSVC_VERSION GREATER 1800 AND NOT MSVC_VERSION EQUAL 1800)
+        message(FATAL_ERROR "Visual Studio 2013 or greater is required.")
+    endif()
+
+    #set default startup project for ms loser studio
+    set_property (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+
+endif (MSVC)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${NANA_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} ${NANA_LINKS}) 
