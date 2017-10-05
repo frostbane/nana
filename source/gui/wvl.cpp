@@ -43,7 +43,7 @@ namespace nana
 	{
 		if (!wait) return;
 		std::cout << "waiting " << wait << " sec...\n";
-#	ifdef STD_THREAD_NOT_SUPPORTED
+#	if defined(STD_THREAD_NOT_SUPPORTED) && !defined(_GLIBCXX_HAS_GTHREADS)
 		boost::this_thread::sleep_for(boost::chrono::seconds{ wait });
 #	else
 		std::this_thread::sleep_for(std::chrono::seconds{ wait });

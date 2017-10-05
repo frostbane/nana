@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <atomic>
 
-#if defined(STD_THREAD_NOT_SUPPORTED)
+#if defined(STD_THREAD_NOT_SUPPORTED) && !defined(_GLIBCXX_HAS_GTHREADS)
     #include <nana/std_thread.hpp>
     #include <nana/std_mutex.hpp>
     #include <nana/std_condition_variable.hpp>

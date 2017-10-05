@@ -17,7 +17,7 @@
 #include <unordered_map>
 #include <fstream>
 
-#if defined(STD_THREAD_NOT_SUPPORTED)
+#if defined(STD_THREAD_NOT_SUPPORTED) && !defined(_GLIBCXX_HAS_GTHREADS)
 #include <nana/std_mutex.hpp>
 #else
 #include <mutex>

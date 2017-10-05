@@ -4,7 +4,11 @@
 
 #if defined(STD_THREAD_NOT_SUPPORTED)
 #if defined(NANA_ENABLE_MINGW_STD_THREADS_WITH_MEGANZ)
-    #include <mingw.condition_variable.h>
+#ifdef _GLIBCXX_HAS_GTHREADS
+#    include <thread>
+#else
+#    include <mingw.condition_variable.h>
+#endif
 #else
 #include <boost/thread/condition_variable.hpp>
 namespace std

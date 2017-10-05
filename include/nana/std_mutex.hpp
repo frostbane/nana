@@ -17,8 +17,8 @@
 #ifdef _GLIBCXX_HAS_GTHREADS
 #    include <thread>
 #else
-#include <mingw.thread.h>
-#include <mingw.mutex.h>
+#    include <mingw.thread.h>
+#    include <mingw.mutex.h>
 #endif
 #else
 #include <boost/thread/mutex.hpp>

@@ -138,13 +138,13 @@ endif(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
 # enable static linkage     # GNU || CLang not MinGW
 if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") #  AND NOT MINGW
     # set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++  -pthread")
-    set(NANA_LINKS "${NANA_LINKS} -static-libgcc -static-libstdc++  -pthread")
+    #set(NANA_LINKS "${NANA_LINKS} -lgcc -lstdc++  -pthread")
     # message("Setting NANA_LINKS to -static-libgcc -static-libstdc++  -pthread or ${NANA_LINKS}")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.3)
         # IS_GNUCXX < 5.3
     else(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.3)
         # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lstdc++fs")    # IS_GNUCXX 5.3 or more
-        set(NANA_LINKS "${NANA_LINKS} -lstdc++fs")
+        #set(NANA_LINKS "${NANA_LINKS} -lstdc++fs")
     endif(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.3)
 
 endif(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") #  AND NOT MINGW
@@ -162,10 +162,10 @@ endif ()
 # Find PNG
 if(NANA_CMAKE_ENABLE_PNG)
     add_definitions(-DNANA_ENABLE_PNG)
-    set(NANA_LINKS "${NANA_LINKS} -lpng")
     if(NANA_CMAKE_LIBPNG_FROM_OS)
         find_package(PNG)
         if (PNG_FOUND)
+            list(APPEND NANA_LINKS ${PNG_LIBRARIES})
             include_directories( ${PNG_INCLUDE_DIRS})
             add_definitions(-DUSE_LIBPNG_FROM_OS)
         endif(PNG_FOUND)
@@ -175,11 +175,11 @@ endif(NANA_CMAKE_ENABLE_PNG)
 # Find JPEG
 if(NANA_CMAKE_ENABLE_JPEG)
     add_definitions(-DNANA_ENABLE_JPEG)
-    set(NANA_LINKS "${NANA_LINKS} -ljpeg")
     if(NANA_CMAKE_LIBJPEG_FROM_OS)
         find_package(JPEG)
         if (JPEG_FOUND)
-            include_directories( ${JPEG_INCLUDE_DIRS})
+            set(NANA_LINKS "${NANA_LINKS}" "${JPEG_LIBRARY}")
+            include_directories( ${JPEG_INCLUDE_DIR})
             add_definitions(-DUSE_LIBJPEG_FROM_OS)
         endif(JPEG_FOUND)
     endif(NANA_CMAKE_LIBJPEG_FROM_OS)
@@ -224,6 +224,19 @@ endif (NANA_CMAKE_NANA_FILESYSTEM_FORCE)
 
 
 ######## Nana options
+##force the system to use my directory
+#include_directories("/d/lib/env/include"
+#                    "d:\\lib\\env\\include")
+#link_directories("/d/lib/env/lib"
+#                 "d:\\lib\\env\\lib")
+#            add_definitions(-DUSE_LIBJPEG_FROM_OS)
+#            add_definitions(-DUSE_LIBPNG_FROM_OS)
+#list(APPEND NANA_LINKS "-ljpeg"
+#                       "-lpng")
+
+add_definitions(-fmax-errors=3
+                #-DHAVE_STDINCLUDES
+                )
 
 add_definitions(-DNANA_IGNORE_CONF)
 if(NANA_CMAKE_VERBOSE_PREPROCESSOR)
@@ -298,6 +311,7 @@ function(set_nana_test dir files)
         add_executable(${test} "${${dir}}${test}.cpp")
         set_property( TARGET ${test} PROPERTY CXX_STANDARD 14 )
         target_link_libraries(${test} ${nana_lib} ${NANA_LINKS})
+
         #if(NANA_CMAKE_AUTOMATIC_GUI_TESTING)
         #add_custom_command( TARGET  ${test} POST_BUILD COMMAND  ${test} )
         #add_custom_target(do_always_${test} ALL COMMAND ${test})
@@ -310,7 +324,13 @@ endfunction(set_nana_test)
 
 
 set (demos_dir )
-set (demos    calculator file_explorer helloworld_demo notepad   widget_show  widget_show2   )
+set (demos    calculator  helloworld_demo notepad)
+
+    #filesystem related demos
+    list (APPEND demos file_explorer
+                       widget_show
+                       widget_show2)
+
 # Pending:
 
 set (examples_dir Examples/)
@@ -318,7 +338,7 @@ set (examples a_group_impl       animate-bmp        audio_player       audio_pla
         background-effects categ              clicked            windows-subclassing
         dock               drag-button        draw               example.button
         example_combox     example_listbox    example_menu       lambda_event.Cpp11
-        filebox-txt        folder_tree        folder_tree_nana   folder_tree_std
+        filebox-txt
         framework_design_1 framework_design_2 framework_design_3 label_listener
         group              HelloWord          helloword_quit     listbox_inline_widget
         inputbox           listbox_Resolver   loader_1           loader_2
@@ -327,6 +347,13 @@ set (examples a_group_impl       animate-bmp        audio_player       audio_pla
         stretch_image      threading          thread-pool        various_events
         window-dragger     screen             decore
         )
+
+    #filesystem related examples
+    list(APPEND examples
+                folder_tree
+                folder_tree_nana
+                folder_tree_std)
+
 # Pending:
 
 if (NANA_CMAKE_INCLUDE_EXPERIMENTAL_DEMOS)
