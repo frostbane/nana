@@ -5,7 +5,7 @@
 #include <nana/system/platform.hpp>
 
 void foo()
-{    
+{
     std::cout<<"This is foo"<<std::endl;
 }
 
@@ -26,7 +26,7 @@ int main()
     pool.wait_for_signal(); //Wait until the signal is triggered. The wait might be finished
                             //before finish of foo2, because the signal is made before pushing foo2.
 
+#ifdef NANA_AUTOMATIC_GUI_TESTING
 	nana::Wait(1);
-
+#endif
 }
-

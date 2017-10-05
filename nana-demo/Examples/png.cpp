@@ -7,13 +7,13 @@ int main()
     form fm;
     picture pic(fm);
     place p{fm};
-    p.div("pic"); 
+    p.div("pic");
     p["pic"] << pic ;
 #ifdef    NANA_ENABLE_PNG
     pic.load( paint::image("../Examples/drawing.png") );
-#elifdef   NANA_ENABLE_JPGG     
-   // pic.load( paint::image("../Examples/drawing.jpg") );
-#else 
+#elif defined(NANA_ENABLE_JPEG)
+    pic.load( paint::image("../Examples/drawing.jpg") );
+#else
     pic.load( paint::image("../Examples/Save.bmp") );
 #endif
     fm.show();

@@ -2,19 +2,19 @@
  *	Nana GUI Library Definition
  *	Copyright(C) 2003-2017 Jinhao(cnjinhao@hotmail.com)
  *
- *	Distributed under the Boost Software License, Version 1.0. 
- *	(See accompanying file LICENSE_1_0.txt or copy at 
+ *	Distributed under the Boost Software License, Version 1.0.
+ *	(See accompanying file LICENSE_1_0.txt or copy at
  *	http://www.boost.org/LICENSE_1_0.txt)
  *
  *	@file: nana/gui/wvl.cpp
  *	@description:
- *		the file contains the files required for running of Nana.GUI 
+ *		the file contains the files required for running of Nana.GUI
  */
 
 #include <nana/gui/wvl.hpp>
 #include <nana/gui/detail/bedrock.hpp>
 #include <nana/std_thread.hpp>
-#include <iostream> 
+#include <iostream>
 #include <chrono>
 
 //#define NANA_AUTOMATIC_GUI_TESTING
@@ -58,16 +58,16 @@ namespace nana
 
 
 	void exec(
-		unsigned wait,         // = 1,      ///< for the GUI to be constructed, in seconds  
+		unsigned wait,         // = 1,      ///< for the GUI to be constructed, in seconds
 		unsigned wait_end,     // = 1,      ///< for the GUI to be destructed, in seconds
 		std::function<void()>f // = {}      ///< emit events to mimics user actions and may asert results
 	)
 	{
-			
+
 	    std::cout << "Will wait " << wait << " sec...\n";
 
 	    std::thread t([wait, &f, wait_end]()
-			{ 
+			{
 				Wait( wait );
 				std::cout << "running... \n"  ;
 				if (f)
@@ -82,18 +82,17 @@ namespace nana
 				std::cout << "Now again ";
 				Wait(wait_end);
 				std::cout << "Done... Now API::exit all ...\n";
-				API::exit_all();   
-			});		
+				API::exit_all();
+			});
 
 		pump();
 		if (t.joinable())
 			t.join();
 	}
-#else
+#endif
 	void exec()
 	{
 		internal_scope_guard lock;
 		detail::bedrock::instance().pump_event(nullptr, false);
 	}
-#endif
 }//end namespace nana
